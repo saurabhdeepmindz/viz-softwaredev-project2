@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/user/.claude/commands/**)"
+    ],
+    "additionalDirectories": [
+      "D:\\SaurabhVerma\\COE\\self\\viz-softwaredev-project2\\.claude",
+      "C:\\Users\\user\\.claude\\commands",
+      "D:\\SaurabhVerma\\COE\\self\\viz-softwaredev-project2\\.claude\\commands"
+    ]
+  }
+}
