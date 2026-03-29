@@ -29,9 +29,10 @@
   - Files: `app/api/generate/route.ts` (updated), `app/api/download/[jobId]/route.ts`
   - Completed: 2026-03-29 — lib/pipeline.ts wires readFile→generateNotebookCells→assembleNotebook→writeFile; generate route kicks off pipeline async, updates jobRegistry on complete/error; /api/download/[jobId] streams .ipynb; /api/status/[jobId] returns status+metadata; 4 unit tests pass; build clean
 
-- [ ] Task 6: Build Processing page with animated progress feed (P0)
+- [x] Task 6: Build Processing page with animated progress feed (P0)
   - Acceptance: After form submit, user navigates to `/processing?jobId=...`; page shows sequential animated steps ("Parsing PDF...", "Identifying core algorithms...", "Building experiments...", "Assembling notebook..."); polls `GET /api/status/:jobId` every 3s; auto-redirects to `/result?jobId=...` when done
   - Files: `app/processing/page.tsx`, `components/progress-feed.tsx`, `app/api/status/[jobId]/route.ts`
+  - Completed: 2026-03-29 — ProcessingPage polls /api/status every 3s, auto-redirects on complete; ProgressFeed shows 7 animated steps with spinner/checkmark/pending icons; gradient progress bar at top; error state with start-over link; 3/3 E2E tests pass
 
 - [ ] Task 7: Build Result page — download + Open in Colab (P1)
   - Acceptance: `/result?jobId=...` shows paper title and notebook section count; "Download .ipynb" button triggers file download via `/api/download/:jobId`; "Open in Colab" button calls `/api/colab/:jobId` which creates an anonymous GitHub Gist and returns a `colab.research.google.com/gist/...` URL that opens in a new tab
