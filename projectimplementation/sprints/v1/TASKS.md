@@ -14,9 +14,10 @@
   - Files: `app/page.tsx`, `components/api-key-input.tsx`, `components/pdf-dropzone.tsx`
   - Completed: 2026-03-29 — Hero heading, ApiKeyInput (masked + eye toggle), PdfDropzone (drag-drop + click), coral CTA button disabled until both fields filled; 5/5 Playwright E2E tests pass; npm audit clean
 
-- [ ] Task 3: Create `POST /api/generate` route — receive upload and parse PDF (P0)
+- [x] Task 3: Create `POST /api/generate` route — receive upload and parse PDF (P0)
   - Acceptance: Accepts multipart form data (apiKey + pdf file); uses `pdf-parse` to extract full text; creates a unique `jobId`; writes raw text to `projectimplementation/output/<jobId>/raw.txt`; returns `{ jobId }` within 3s
   - Files: `app/api/generate/route.ts`, `lib/pdf-parser.ts`
+  - Completed: 2026-03-29 — POST /api/generate validates apiKey + pdf, parses with pdf-parse v1.1.1, writes raw.txt to output/\{jobId\}/, returns {jobId, pageCount}; jobRegistry Map for pipeline state; next.config serverExternalPackages fix; 4 unit + 4 integration tests pass; npm audit clean
 
 - [ ] Task 4: Build o3 notebook generation service (P0)
   - Acceptance: `lib/notebook-generator.ts` calls OpenAI `o3` with a structured system prompt; receives JSON array of cells; `lib/notebook-assembler.ts` converts cells to valid nbformat v4; writes `projectimplementation/output/<jobId>/notebook.ipynb`; all 10 required sections present
