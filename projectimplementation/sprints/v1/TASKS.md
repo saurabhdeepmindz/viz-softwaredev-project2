@@ -9,9 +9,10 @@
   - Files: `package.json`, `tailwind.config.ts`, `app/layout.tsx`, `app/globals.css`, `components.json`
   - Completed: 2026-03-29 — Next.js 14 scaffolded in paper2notebook/; Geist Sans+Mono from next/font/google; shadcn/ui initialized (Button, Card); dark class + #0d1117 bg on body; vitest added; 6 smoke tests pass; build clean; npm audit 0 vulnerabilities
 
-- [ ] Task 2: Build Landing page — API key input + PDF upload form (P0)
+- [x] Task 2: Build Landing page — API key input + PDF upload form (P0)
   - Acceptance: Page renders with dark background, purple accent, Geist font; API key field is masked (type=password); PDF upload supports drag-drop and click-to-browse; "Generate Notebook" button is disabled until both fields are filled; form submits to `POST /api/generate`
-  - Files: `app/page.tsx`, `components/api-key-input.tsx`, `components/pdf-upload.tsx`
+  - Files: `app/page.tsx`, `components/api-key-input.tsx`, `components/pdf-dropzone.tsx`
+  - Completed: 2026-03-29 — Hero heading, ApiKeyInput (masked + eye toggle), PdfDropzone (drag-drop + click), coral CTA button disabled until both fields filled; 5/5 Playwright E2E tests pass; npm audit clean
 
 - [ ] Task 3: Create `POST /api/generate` route — receive upload and parse PDF (P0)
   - Acceptance: Accepts multipart form data (apiKey + pdf file); uses `pdf-parse` to extract full text; creates a unique `jobId`; writes raw text to `projectimplementation/output/<jobId>/raw.txt`; returns `{ jobId }` within 3s
