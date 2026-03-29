@@ -19,9 +19,10 @@
   - Files: `app/api/generate/route.ts`, `lib/pdf-parser.ts`
   - Completed: 2026-03-29 — POST /api/generate validates apiKey + pdf, parses with pdf-parse v1.1.1, writes raw.txt to output/\{jobId\}/, returns {jobId, pageCount}; jobRegistry Map for pipeline state; next.config serverExternalPackages fix; 4 unit + 4 integration tests pass; npm audit clean
 
-- [ ] Task 4: Build o3 notebook generation service (P0)
+- [x] Task 4: Build o3 notebook generation service (P0)
   - Acceptance: `lib/notebook-generator.ts` calls OpenAI `o3` with a structured system prompt; receives JSON array of cells; `lib/notebook-assembler.ts` converts cells to valid nbformat v4; writes `projectimplementation/output/<jobId>/notebook.ipynb`; all 10 required sections present
   - Files: `lib/notebook-generator.ts`, `lib/notebook-assembler.ts`, `lib/prompts/system-prompt.ts`
+  - Completed: 2026-03-29 — generateNotebookCells() calls o3, strips code fences, validates JSON array; assembleNotebook() produces valid nbformat v4 with kernelspec; system-prompt enforces 10 sections + realistic synthetic data (N>=10k); 13 unit tests pass; build clean; npm audit 0 vulnerabilities
 
 - [ ] Task 5: Wire full pipeline — PDF parse → o3 → save notebook (P0)
   - Acceptance: End-to-end works: upload PDF → parse → call o3 → save `.ipynb` → return `{ jobId, status: "complete" }`; tested manually with one real ML paper PDF; notebook opens in Jupyter without errors
