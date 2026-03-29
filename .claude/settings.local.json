@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/user/.claude/commands/**)"
+      "Read(//c/Users/user/.claude/commands/**)",
+      "Bash(npx playwright:*)"
     ],
     "additionalDirectories": [
       "D:\\SaurabhVerma\\COE\\self\\viz-softwaredev-project2\\.claude",
