@@ -3,8 +3,9 @@ import { randomUUID } from "crypto";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { parsePdf } from "@/lib/pdf-parser";
+import { runGenerationPipeline } from "@/lib/pipeline";
 
-// Output directory — relative to project root (not Next.js app)
+// Output directory lives one level above the Next.js app
 const OUTPUT_ROOT = path.resolve(process.cwd(), "..", "output");
 
 export async function POST(req: NextRequest) {
@@ -18,24 +19,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Validate required fields
   const apiKey = formData.get("apiKey");
   if (!apiKey || typeof apiKey !== "string" || apiKey.trim().length === 0) {
-    return NextResponse.json(
-      { error: "apiKey is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "apiKey is required" }, { status: 400 });
   }
 
   const pdfFile = formData.get("pdf");
   if (!pdfFile || !(pdfFile instanceof Blob)) {
-    return NextResponse.json(
-      { error: "pdf file is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "pdf file is required" }, { status: 400 });
   }
 
-  // Validate MIME type
   if (pdfFile.type !== "application/pdf") {
     return NextResponse.json(
       { error: "Uploaded file must be a PDF (application/pdf)" },
@@ -53,36 +46,61 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 422 });
   }
 
-  // Create job directory and persist raw text
+  // Create job directory
   const jobId = randomUUID();
   const jobDir = path.join(OUTPUT_ROOT, jobId);
+  const rawTextPath = path.join(jobDir, "raw.txt");
+
   try {
     await mkdir(jobDir, { recursive: true });
-    await writeFile(path.join(jobDir, "raw.txt"), parseResult.text, "utf-8");
-    // Store API key in job metadata (in-memory only — never persisted to disk)
-    // The key will be used by the async generation pipeline
-    jobRegistry.set(jobId, {
-      status: "parsed",
-      apiKey: apiKey.trim(),
-      pageCount: parseResult.pageCount,
-      rawTextPath: path.join(jobDir, "raw.txt"),
-      createdAt: Date.now(),
-    });
+    await writeFile(rawTextPath, parseResult.text, "utf-8");
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Storage error";
-    return NextResponse.json(
-      { error: `Failed to create job: ${msg}` },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: `Failed to create job: ${msg}` }, { status: 500 });
   }
 
-  return NextResponse.json(
-    { jobId, pageCount: parseResult.pageCount },
-    { status: 200 }
-  );
+  // Register job
+  jobRegistry.set(jobId, {
+    status: "generating",
+    apiKey: apiKey.trim(),
+    pageCount: parseResult.pageCount,
+    rawTextPath,
+    createdAt: Date.now(),
+  });
+
+  // Run pipeline asynchronously — client polls /api/status/:jobId
+  runGenerationPipeline({
+    jobId,
+    rawTextPath,
+    apiKey: apiKey.trim(),
+    outputDir: jobDir,
+  })
+    .then(({ notebookPath, cellCount }) => {
+      const job = jobRegistry.get(jobId);
+      if (job) {
+        jobRegistry.set(jobId, {
+          ...job,
+          status: "complete",
+          notebookPath,
+          cellCount,
+        });
+      }
+    })
+    .catch((err: unknown) => {
+      const job = jobRegistry.get(jobId);
+      if (job) {
+        jobRegistry.set(jobId, {
+          ...job,
+          status: "error",
+          errorMessage: err instanceof Error ? err.message : String(err),
+        });
+      }
+    });
+
+  return NextResponse.json({ jobId, pageCount: parseResult.pageCount }, { status: 200 });
 }
 
-// In-memory job registry — intentionally simple for v1 (single server process)
+// In-memory job registry
 export type JobStatus = "parsed" | "generating" | "complete" | "error";
 
 export interface JobRecord {
@@ -92,9 +110,9 @@ export interface JobRecord {
   rawTextPath: string;
   createdAt: number;
   notebookPath?: string;
+  cellCount?: number;
   errorMessage?: string;
   title?: string;
 }
 
-// Module-level singleton — accessible from other route handlers
 export const jobRegistry = new Map<string, JobRecord>();

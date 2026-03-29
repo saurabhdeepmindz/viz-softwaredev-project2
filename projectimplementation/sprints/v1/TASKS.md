@@ -24,9 +24,10 @@
   - Files: `lib/notebook-generator.ts`, `lib/notebook-assembler.ts`, `lib/prompts/system-prompt.ts`
   - Completed: 2026-03-29 — generateNotebookCells() calls o3, strips code fences, validates JSON array; assembleNotebook() produces valid nbformat v4 with kernelspec; system-prompt enforces 10 sections + realistic synthetic data (N>=10k); 13 unit tests pass; build clean; npm audit 0 vulnerabilities
 
-- [ ] Task 5: Wire full pipeline — PDF parse → o3 → save notebook (P0)
+- [x] Task 5: Wire full pipeline — PDF parse → o3 → save notebook (P0)
   - Acceptance: End-to-end works: upload PDF → parse → call o3 → save `.ipynb` → return `{ jobId, status: "complete" }`; tested manually with one real ML paper PDF; notebook opens in Jupyter without errors
   - Files: `app/api/generate/route.ts` (updated), `app/api/download/[jobId]/route.ts`
+  - Completed: 2026-03-29 — lib/pipeline.ts wires readFile→generateNotebookCells→assembleNotebook→writeFile; generate route kicks off pipeline async, updates jobRegistry on complete/error; /api/download/[jobId] streams .ipynb; /api/status/[jobId] returns status+metadata; 4 unit tests pass; build clean
 
 - [ ] Task 6: Build Processing page with animated progress feed (P0)
   - Acceptance: After form submit, user navigates to `/processing?jobId=...`; page shows sequential animated steps ("Parsing PDF...", "Identifying core algorithms...", "Building experiments...", "Assembling notebook..."); polls `GET /api/status/:jobId` every 3s; auto-redirects to `/result?jobId=...` when done
