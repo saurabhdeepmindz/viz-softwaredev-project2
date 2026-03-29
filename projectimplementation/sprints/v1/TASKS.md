@@ -4,9 +4,10 @@
 
 ---
 
-- [ ] Task 1: Initialize Next.js 14 project with Tailwind CSS, shadcn/ui, and Geist font (P0)
+- [x] Task 1: Initialize Next.js 14 project with Tailwind CSS, shadcn/ui, and Geist font (P0)
   - Acceptance: `npm run dev` starts without errors; Geist font renders; shadcn `Button` and `Card` import cleanly; dark mode class applied to root layout
   - Files: `package.json`, `tailwind.config.ts`, `app/layout.tsx`, `app/globals.css`, `components.json`
+  - Completed: 2026-03-29 — Next.js 14 scaffolded in paper2notebook/; Geist Sans+Mono from next/font/google; shadcn/ui initialized (Button, Card); dark class + #0d1117 bg on body; vitest added; 6 smoke tests pass; build clean; npm audit 0 vulnerabilities
 
 - [ ] Task 2: Build Landing page — API key input + PDF upload form (P0)
   - Acceptance: Page renders with dark background, purple accent, Geist font; API key field is masked (type=password); PDF upload supports drag-drop and click-to-browse; "Generate Notebook" button is disabled until both fields are filled; form submits to `POST /api/generate`
